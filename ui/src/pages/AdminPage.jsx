@@ -1,4 +1,3 @@
-import { ORDER_STATUS } from '../data/menus';
 import { useApp } from '../hooks/useApp';
 import { formatPrice } from '../utils/formatPrice';
 
@@ -9,7 +8,7 @@ function formatDate(date) {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
-  }).format(date);
+  }).format(new Date(date));
 }
 
 function orderSummary(items) {
@@ -17,7 +16,43 @@ function orderSummary(items) {
 }
 
 export default function AdminPage() {
-  const { menus, orders, dashboard, updateStock, advanceOrderStatus } = useApp();
+  const { menus, orders, dashboard, loading, error, updateStock, setOrderStatus, resetOrders } =
+    useApp();
+
+  const activeOrders = orders.filter((order) => order.status !== 'done');
+
+  const handleStock = async (menuId, delta) => {
+    try {
+      await updateStock(menuId, delta);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleSetStatus = (orderId, status) => {
+    setOrderStatus(orderId, status);
+  };
+
+  const handleResetOrders = () => {
+    if (!window.confirm('주문 현황을 모두 초기화할까요?')) return;
+    resetOrders();
+  };
+
+  if (loading) {
+    return (
+      <main className="page admin-page">
+        <p className="page-message">관리자 데이터를 불러오는 중...</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="page admin-page">
+        <p className="page-message page-message--error">{error}</p>
+      </main>
+    );
+  }
 
   return (
     <main className="page admin-page">
@@ -42,7 +77,7 @@ export default function AdminPage() {
                   className="btn-icon"
                   aria-label="재고 감소"
                   disabled={menu.stock <= 0}
-                  onClick={() => updateStock(menu.id, -1)}
+                  onClick={() => handleStock(menu.id, -1)}
                 >
                   −
                 </button>
@@ -51,7 +86,7 @@ export default function AdminPage() {
                   className="btn-icon"
                   aria-label="재고 증가"
                   disabled={menu.stock >= 99}
-                  onClick={() => updateStock(menu.id, 1)}
+                  onClick={() => handleStock(menu.id, 1)}
                 >
                   +
                 </button>
@@ -61,38 +96,55 @@ export default function AdminPage() {
         </div>
       </section>
 
-      <section className="admin-panel">
-        <h2 className="panel-title">주문 현황</h2>
-        {orders.length === 0 ? (
+      <div className="admin-orders-block">
+        <section className="admin-panel">
+          <h2 className="panel-title">주문 현황</h2>
+        {activeOrders.length === 0 ? (
           <p className="cart-empty">주문이 없습니다.</p>
         ) : (
           <ul className="order-list">
-            {orders.map((order) => {
-              const status = ORDER_STATUS[order.status] ?? ORDER_STATUS.received;
-              return (
+            {activeOrders.map((order) => (
                 <li key={order.id} className="order-row">
                   <div className="order-info">
                     <span className="order-date">{formatDate(order.createdAt)}</span>
                     <span className="order-items">{orderSummary(order.items)}</span>
-                    <span className="order-price">{formatPrice(order.totalPrice)}</span>
+                    <span className="order-price">
+                      {formatPrice(
+                        order.totalPrice ||
+                          order.items?.reduce((s, i) => s + (i.subtotal || 0), 0),
+                      )}
+                    </span>
                   </div>
-                  {status?.next ? (
+                  <div className="order-actions">
                     <button
                       type="button"
-                      className="btn btn-primary btn-sm"
-                      onClick={() => advanceOrderStatus(order.id)}
+                      className={`order-status-banner order-status-banner--making${
+                        order.status === 'making' ? ' order-status-banner--active' : ''
+                      }`}
+                      disabled={order.status === 'making'}
+                      onClick={() => handleSetStatus(order.id, 'making')}
                     >
-                      {status.action}
+                      제조 중
                     </button>
-                  ) : (
-                    <span className="status-done">{status.label}</span>
-                  )}
+                    <button
+                      type="button"
+                      className="order-status-banner order-status-banner--done"
+                      onClick={() => handleSetStatus(order.id, 'done')}
+                    >
+                      제조 완료
+                    </button>
+                  </div>
                 </li>
-              );
-            })}
+              ))}
           </ul>
         )}
-      </section>
+        </section>
+        <div className="order-reset-wrap">
+          <button type="button" className="btn btn-primary btn-sm" onClick={handleResetOrders}>
+            초기화
+          </button>
+        </div>
+      </div>
     </main>
   );
 }

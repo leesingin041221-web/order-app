@@ -121,7 +121,13 @@ npm run dev
 브라우저: http://localhost:3000/api/health  
 `database`와 `menus: 6`이 보이면 연결 성공입니다.
 
-## 다음 단계 (PRD §7)
+## API (PRD §7)
 
-- `GET /api/menus`, `POST /api/orders` 등 라우트 구현
-- `ui`에서 API 호출로 연동
+| 메서드 | 경로 | 설명 |
+|--------|------|------|
+| GET | `/api/health` | 서버·DB 상태 |
+| GET | `/api/menus?include=stock` | 메뉴·옵션 목록 |
+| PATCH | `/api/menus/:id/stock` | 재고 수정 `{ delta: 1 }` |
+| POST | `/api/orders` | 주문 생성 |
+| GET | `/api/orders` | 주문 목록·대시보드 |
+| PATCH | `/api/orders/:id/status` | 주문 상태 변경 |

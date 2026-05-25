@@ -8,12 +8,12 @@ export default function Cart({ onNotify }) {
     if (onNotify) onNotify(payload);
   };
 
-  const handleOrder = () => {
-    const ok = placeOrder();
-    if (!ok) {
+  const handleOrder = async () => {
+    const result = await placeOrder();
+    if (!result.ok) {
       showNotice({
         type: 'error',
-        text: '장바구니가 비었거나 재고가 부족합니다.',
+        text: result.message ?? '주문에 실패했습니다.',
       });
       return;
     }

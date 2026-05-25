@@ -4,9 +4,13 @@ import apiRouter from './routes/index.js';
 
 const app = express();
 
+const corsOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
+  .split(',')
+  .map((o) => o.trim());
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
+    origin: corsOrigins,
   }),
 );
 app.use(express.json());

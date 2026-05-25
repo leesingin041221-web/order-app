@@ -1,13 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
-import { MENU_OPTIONS } from '../data/menus';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../hooks/useApp';
 import { formatOptionPrice, formatPrice } from '../utils/formatPrice';
 
+function buildDefaultOptions(menuOptions) {
+  return Object.fromEntries((menuOptions ?? []).map((o) => [o.id, false]));
+}
+
 export default function MenuCard({ menu, onNotify }) {
   const { addToCart } = useApp();
-  const [options, setOptions] = useState({ shot: false, syrup: false });
+  const menuOptions = useMemo(() => menu.options ?? [], [menu.options]);
+  const [options, setOptions] = useState(() => buildDefaultOptions(menuOptions));
   const [added, setAdded] = useState(false);
   const addedTimerRef = useRef(null);
+
+  useEffect(() => {
+    setOptions(buildDefaultOptions(menuOptions));
+  }, [menu.id, menuOptions]);
 
   useEffect(() => {
     return () => {
@@ -20,7 +28,7 @@ export default function MenuCard({ menu, onNotify }) {
   };
 
   const handleAdd = () => {
-    const selected = MENU_OPTIONS.filter((o) => options[o.id]).map((o) => o.id);
+    const selected = menuOptions.filter((o) => options[o.id]).map((o) => o.id);
     const result = addToCart(menu.id, selected);
     if (!result.ok) {
       if (result.reason === 'stock') {
@@ -54,14 +62,14 @@ export default function MenuCard({ menu, onNotify }) {
       <p className="menu-desc">{menu.description}</p>
       <fieldset className="menu-options">
         <legend className="visually-hidden">{menu.name} 옵션</legend>
-        {MENU_OPTIONS.map((opt) => (
+        {menuOptions.map((opt) => (
           <label key={opt.id} className="option-label">
             <input
               type="checkbox"
-              checked={options[opt.id]}
+              checked={!!options[opt.id]}
               onChange={() => toggleOption(opt.id)}
             />
-            {opt.label} ({formatOptionPrice(opt.price)})
+            {opt.label ?? opt.name} ({formatOptionPrice(opt.price)})
           </label>
         ))}
       </fieldset>

@@ -4,7 +4,7 @@ import MenuCard from '../components/MenuCard';
 import { useApp } from '../hooks/useApp';
 
 export default function OrderPage() {
-  const { menus } = useApp();
+  const { menus, loading, error } = useApp();
   const [notice, setNotice] = useState(null);
 
   useEffect(() => {
@@ -12,6 +12,23 @@ export default function OrderPage() {
     const timer = window.setTimeout(() => setNotice(null), 3000);
     return () => window.clearTimeout(timer);
   }, [notice]);
+
+  if (loading) {
+    return (
+      <main className="page order-page">
+        <p className="page-message">메뉴를 불러오는 중...</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="page order-page">
+        <p className="page-message page-message--error">{error}</p>
+        <p className="page-hint">server 폴더에서 npm run dev 가 실행 중인지 확인하세요.</p>
+      </main>
+    );
+  }
 
   return (
     <main className="page order-page">

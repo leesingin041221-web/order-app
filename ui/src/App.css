@@ -12,6 +12,23 @@
   padding: 0 1.5rem 2.5rem;
 }
 
+.page-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #444;
+}
+
+.page-message--error {
+  color: #c00;
+  font-weight: 600;
+}
+
+.page-hint {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
 .error-fallback {
   max-width: 480px;
   margin: 4rem auto;
@@ -505,6 +522,68 @@
 
 .order-date {
   min-width: 8rem;
+}
+
+.order-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.order-status-banner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 5.5rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.order-status-banner--making {
+  border: 1px solid var(--color-black);
+  background: var(--color-black);
+  color: #fff;
+  cursor: pointer;
+}
+
+.order-status-banner--making:hover:not(:disabled) {
+  background: #333;
+  border-color: #333;
+}
+
+.order-status-banner--making:disabled,
+.order-status-banner--making.order-status-banner--active {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.order-status-banner--done {
+  border: 1px solid var(--color-black);
+  background: var(--color-black);
+  color: #fff;
+  cursor: pointer;
+}
+
+.order-status-banner--done:hover {
+  background: #333;
+  border-color: #333;
+}
+
+.admin-orders-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.order-reset-wrap {
+  margin-top: 0;
+  text-align: center;
 }
 
 .status-done {

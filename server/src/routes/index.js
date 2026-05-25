@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { getPool, testConnection } from '../db/pool.js';
+import menusRouter from './menus.js';
+import ordersRouter from './orders.js';
 
 const router = Router();
 
@@ -25,5 +27,8 @@ router.get('/health', async (_req, res) => {
     });
   }
 });
+
+router.use('/menus', menusRouter);
+router.use('/orders', ordersRouter);
 
 export default router;

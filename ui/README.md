@@ -33,7 +33,14 @@ ui/
 
 ## 시작하기
 
-프로젝트 루트에서 `ui` 폴더로 이동한 뒤 의존성을 설치하고 개발 서버를 실행합니다.
+**1. API 서버** (`server/` 폴더, 다른 터미널)
+
+```bash
+cd server
+npm run dev
+```
+
+**2. 프런트**
 
 ```bash
 cd ui
@@ -42,6 +49,8 @@ npm run dev
 ```
 
 브라우저: **http://localhost:5173**
+
+API: `http://localhost:3000/api` (환경 변수 `VITE_API_BASE`)
 
 ## npm 스크립트
 
