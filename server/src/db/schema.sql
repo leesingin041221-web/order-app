@@ -27,22 +27,23 @@ CREATE TABLE IF NOT EXISTS menu_options (
 );
 
 CREATE TABLE IF NOT EXISTS orders (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id VARCHAR(64) PRIMARY KEY,
   ordered_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   status VARCHAR(20) NOT NULL DEFAULT 'received'
     CHECK (status IN ('received', 'making', 'done')),
-  total_price INTEGER NOT NULL CHECK (total_price >= 0),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  total_amount INTEGER NOT NULL CHECK (total_amount >= 0),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS order_items (
   id SERIAL PRIMARY KEY,
-  order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-  menu_id INTEGER NOT NULL REFERENCES menus(id),
+  order_id VARCHAR(64) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  menu_id VARCHAR(32) NOT NULL,
   menu_name VARCHAR(100) NOT NULL,
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   unit_price INTEGER NOT NULL CHECK (unit_price >= 0),
-  subtotal INTEGER NOT NULL CHECK (subtotal >= 0),
+  line_total INTEGER NOT NULL CHECK (line_total >= 0),
   options_snapshot JSONB NOT NULL DEFAULT '[]'::jsonb
 );
 

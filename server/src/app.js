@@ -4,13 +4,21 @@ import apiRouter from './routes/index.js';
 
 const app = express();
 
-const corsOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
-  .split(',')
-  .map((o) => o.trim());
+const defaultOrigins = [
+  'http://localhost:5173',
+  'https://order-app-frontend-yfr4.onrender.com',
+];
+
+const corsOrigins = [
+  ...defaultOrigins,
+  ...(process.env.CORS_ORIGIN ?? '').split(',').map((o) => o.trim()),
+].filter(Boolean);
+
+const uniqueCorsOrigins = [...new Set(corsOrigins)];
 
 app.use(
   cors({
-    origin: corsOrigins,
+    origin: uniqueCorsOrigins,
   }),
 );
 app.use(express.json());

@@ -25,7 +25,10 @@ export default function OrderPage() {
     return (
       <main className="page order-page">
         <p className="page-message page-message--error">{error}</p>
-        <p className="page-hint">server 폴더에서 npm run dev 가 실행 중인지 확인하세요.</p>
+        <p className="page-hint">
+          API: https://order-app-ac6k.onrender.com/api — 백엔드 재배포·CORS 설정 후 새로고침(Ctrl+F5)해
+          보세요.
+        </p>
       </main>
     );
   }

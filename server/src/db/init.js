@@ -24,7 +24,12 @@ export async function initDatabase() {
 }
 
 async function ensureCozyDatabase() {
-  const baseUrl = getDatabaseUrl().replace(/\/cozy(\?.*)?$/i, '/postgres$1');
+  const url = getDatabaseUrl();
+  if (!/\/cozy(\?|$)/i.test(url.replace(/\?.*$/, ''))) {
+    return;
+  }
+
+  const baseUrl = url.replace(/\/cozy(\?.*)?$/i, '/postgres$1');
   const admin = new pg.Pool({ connectionString: baseUrl });
   try {
     const { rows } = await admin.query(
@@ -45,7 +50,8 @@ async function main() {
     await ensureCozyDatabase();
     const db = getPool();
     await db.query('SELECT 1');
-    console.log('✓ 데이터베이스 연결 성공 (cozy)');
+    const { database } = await testConnection();
+    console.log(`✓ 데이터베이스 연결 성공 (${database})`);
 
     await initDatabase();
     console.log('✓ 스키마·시드 데이터 준비 완료');
