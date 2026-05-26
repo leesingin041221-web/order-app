@@ -33,9 +33,9 @@ export default function AdminPage() {
     setOrderStatus(orderId, status);
   };
 
-  const handleResetOrders = () => {
+  const handleResetOrders = async () => {
     if (!window.confirm('주문 현황을 모두 초기화할까요?')) return;
-    resetOrders();
+    await resetOrders();
   };
 
   if (loading) {

@@ -190,10 +190,14 @@ export function AppProvider({ children }) {
   );
 
   const resetOrders = useCallback(async () => {
-    const data = await apiResetOrders();
-    setOrders(data.orders);
-    setDashboard(data.dashboard);
-  }, []);
+    try {
+      const data = await apiResetOrders();
+      setOrders(data.orders);
+      setDashboard(data.dashboard);
+    } finally {
+      await refreshOrders();
+    }
+  }, [refreshOrders]);
 
   const cartTotal = useMemo(
     () => cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),

@@ -103,11 +103,15 @@ router.get(
       result.push(mapOrderRow(order, items));
     }
 
+    const received = orders.filter((o) => o.status === 'received').length;
+    const making = orders.filter((o) => o.status === 'making').length;
+    const done = orders.filter((o) => o.status === 'done').length;
+
     const dashboard = {
-      total: orders.length,
-      received: orders.filter((o) => o.status === 'received').length,
-      making: orders.filter((o) => o.status === 'making').length,
-      done: orders.filter((o) => o.status === 'done').length,
+      total: received + making,
+      received,
+      making,
+      done,
     };
 
     res.json({ orders: result, dashboard });
